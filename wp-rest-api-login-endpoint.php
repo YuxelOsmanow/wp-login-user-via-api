@@ -64,7 +64,6 @@ function mm_login_user( $request = null ) {
         return $error;
     }
 
-    add_action( 'login_head', 'mm_check_login_code', 10, 1 );
     $auth_cookie = wp_generate_auth_cookie( $user->ID, mm_keep_me_logged_in_for_1_year(), 'auth', '' );
     $auth_cookie_logged_in = wp_generate_auth_cookie( $user->ID, mm_keep_me_logged_in_for_1_year(), 'logged_in', '' );
     $parsed_cookie = wp_parse_auth_cookie();
@@ -85,17 +84,4 @@ function mm_generate_random_user_login_code( $user_id ){
     update_user_meta( $user_id, 'login_code', $value );
 
     return $value;
-}
-
-function mm_check_login_code(){
-    $user_id = filter_input( INPUT_GET, 'user_id' );
-    $qr_code = filter_input( INPUT_GET, 'login_code' );
-    $user = get_user_by( 'id', $user_id );
-
-    if ( $user_id && $qr_code && $qr_code == get_user_meta( $user_id, 'login_code', true ) ){
-        wp_set_current_user( $user_id, $user->user_login );
-        wp_set_auth_cookie( $user_id, true );
-        do_action( 'wp_login', $user->user_login );
-        wp_redirect( get_admin_url() );
-    }
 }

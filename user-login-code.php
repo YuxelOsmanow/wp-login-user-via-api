@@ -37,21 +37,11 @@ class User_Login_Code {
         }
     }
 
-    function generate_login_code_code( $user_id ){
-        $value = get_user_meta( $user_id, $this->user_meta, true );
-
-        if ( empty( $vlaue ) ) {
-            $vlaue = mm_generate_random_user_login_code( $user_id );
-        }
-
-        return $value;
-    }
-
     function get_user_login_code( $user_id ){
         $login_code = get_user_meta( $user_id, $this->user_meta, true );
 
         if ( empty( $login_code ) ){
-            $login_code = $this->generate_login_code_code( $user_id );
+            $login_code = $this->mm_generate_random_user_login_code( $user_id );
         }
 
         return $login_code;
