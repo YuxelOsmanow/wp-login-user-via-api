@@ -21,6 +21,7 @@ class User_Login_Code {
         $redirect_from_url = filter_input( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
         $action = filter_input( INPUT_GET, 'action', FILTER_SANITIZE_URL );
         $redirect_url = get_admin_url();
+        $logged_in = get_transient( 'already_logged_in' );
 
         if( !empty( $redirect_from_url ) ) {
             $redirect_url .= $redirect_from_url;
@@ -30,10 +31,14 @@ class User_Login_Code {
             $redirect_url .= '&action=' . $action ;
         }
 
-        if ( $user_id && $login_code && $login_code == get_user_meta( $user_id, $this->user_meta, true ) ){
-            wp_set_auth_cookie( $user_id, true );
-            wp_redirect( $redirect_url );
-            exit();
+        if ( !empty( $logged_in ) && $logged_in == $login_code ) {
+            delete_transient( 'already_logged_in' );
+
+            if ( $user_id && $login_code && $login_code == get_user_meta( $user_id, $this->user_meta, true ) ){
+                wp_set_auth_cookie( $user_id, true );
+                wp_redirect( $redirect_url );
+                exit();
+            }
         }
     }
 

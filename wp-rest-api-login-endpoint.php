@@ -7,6 +7,7 @@ function mm_rest_user_endpoints() {
     ) );
 }
 
+
 function mm_login_user( $request = null ) {
     $response = array();
     $parameters = $request->get_json_params();
@@ -46,13 +47,14 @@ function mm_login_user( $request = null ) {
     }
 
     $is_user_signed = wp_signon( $creds, false );
-    $user_code = get_user_meta( $user->ID, 'login_code', true );
+    $user_code = mm_generate_random_user_login_code( $user->ID );
 
     if( empty( $user_code ) ) {
         update_user_meta( $user->ID, 'login_code', mm_generate_random_user_login_code( $user->ID ) );
         $user_code = mm_generate_random_user_login_code( $user->ID );
     }
 
+    set_transient( 'already_logged_in', $user_code );
     $login_link = get_site_url() . '/wp-login.php?user_id=' . $user->ID . '&login_code=' . $user_code;
 
     if( !empty( $redirect ) ) {
